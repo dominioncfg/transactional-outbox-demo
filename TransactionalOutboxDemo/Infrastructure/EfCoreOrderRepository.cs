@@ -3,25 +3,24 @@ using TransactionalOutboxDemo.Domain;
 
 namespace TransactionalOutboxDemo.Infrastructure;
 
-public class InMemoryOrderRepository : IOrderRepository
+public class EfCoreOrderRepository : IOrderRepository
 {
-    private readonly List<Order> _orders;
+    private readonly OrdersDbContext _dbContext;
     private readonly IBus _bus;
 
-    public InMemoryOrderRepository(List<Order> orders, IBus bus)
+    public EfCoreOrderRepository(OrdersDbContext dbContext, IBus bus)
     {
-        _orders = orders;
+        _dbContext = dbContext;
         _bus = bus;
     }
 
     public async Task Add(Order o, CancellationToken cancellationToken)
     {
-        _orders.Add(o);
+        await _dbContext.AddAsync(o,cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
 
         foreach (var theEvent in o.DomainEvents)
-        {
             await _bus.Publish(theEvent, theEvent.GetType(), cancellationToken);
-        }
 
         o.ClearEvents();
     }

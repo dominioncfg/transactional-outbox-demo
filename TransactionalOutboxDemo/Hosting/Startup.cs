@@ -4,16 +4,23 @@ using System.Reflection;
 using TransactionalOutboxDemo.Domain;
 using TransactionalOutboxDemo.Infrastructure;
 
-namespace TransactionalOutboxDemo;
+namespace TransactionalOutboxDemo.Hosting;
 
 public class Startup
 {
+    private readonly IConfiguration _configuration;
+    public Startup(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
+
     public void ConfigureServices(IServiceCollection services)
     {
         var executingAssambly = Assembly.GetExecutingAssembly();
 
         services.AddSingleton<List<Order>>();
-        services.AddTransient<IOrderRepository, InMemoryOrderRepository>();
+        services.AddTransient<IOrderRepository, EfCoreOrderRepository>();
         services.AddMediatR(executingAssambly);
 
         services.AddMassTransit(x =>
@@ -27,7 +34,8 @@ public class Startup
 
         });
 
-        //services.AddMassTransitHostedService();
+        services.AddOrdersDbContext(_configuration);
+
         services.AddSwaggerGen();
 
         services
@@ -36,12 +44,14 @@ public class Startup
 
     public void Configure(IApplicationBuilder app)
     {
-        app.UseRouting();
-        app.UseSwagger();
-        app.UseSwaggerUI()
-        .UseEndpoints(endpoints =>
-        {
-            endpoints.MapDefaultControllerRoute();
-        });
+        app
+            .InitializeDatabase()
+            .UseRouting()
+            .UseSwagger()
+            .UseSwaggerUI()
+            .UseEndpoints(endpoints =>
+            {
+                endpoints.MapDefaultControllerRoute();
+            });
     }
 }

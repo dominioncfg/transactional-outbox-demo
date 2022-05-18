@@ -6,3 +6,10 @@ services:
     ports:
         - 5672:5672
         - 15672:15672
+  postgre-sql:
+    image: postgres:14.2
+    container_name: 'outbox-db'
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: Order@2020

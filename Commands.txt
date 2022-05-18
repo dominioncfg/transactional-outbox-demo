@@ -1,2 +1,5 @@
 Run Rabbit MQ
 	1. docker-compose -p Outbox.Infra up -d
+
+** Add new migration
+dotnet ef migrations add OnlyOrdersMigration --project TransactionalOutboxDemo  --startup-project TransactionalOutboxDemo -c OrdersDbContext -o Infrastructure/Migrations

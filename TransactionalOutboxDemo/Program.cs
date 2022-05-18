@@ -1,4 +1,6 @@
-﻿namespace TransactionalOutboxDemo;
+﻿using TransactionalOutboxDemo.Hosting;
+
+namespace TransactionalOutboxDemo;
 
 public class Program
 {
