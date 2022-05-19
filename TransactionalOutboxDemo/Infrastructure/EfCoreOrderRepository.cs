@@ -1,26 +1,27 @@
-﻿using MassTransit;
-using TransactionalOutboxDemo.Domain;
+﻿using TransactionalOutboxDemo.Domain;
 
 namespace TransactionalOutboxDemo.Infrastructure;
 
 public class EfCoreOrderRepository : IOrderRepository
 {
     private readonly OrdersDbContext _dbContext;
-    private readonly IBus _bus;
+    private readonly IMessageOutbox _messageOutbox;
 
-    public EfCoreOrderRepository(OrdersDbContext dbContext, IBus bus)
+    public EfCoreOrderRepository(OrdersDbContext dbContext, IMessageOutbox messageOutbox)
     {
         _dbContext = dbContext;
-        _bus = bus;
+        _messageOutbox = messageOutbox;
     }
 
     public async Task Add(Order o, CancellationToken cancellationToken)
     {
-        await _dbContext.AddAsync(o,cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await _dbContext.AddAsync(o, cancellationToken);
+        
 
         foreach (var theEvent in o.DomainEvents)
-            await _bus.Publish(theEvent, theEvent.GetType(), cancellationToken);
+            await _messageOutbox.PublishMessageAsync(theEvent, cancellationToken);
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
 
         o.ClearEvents();
     }

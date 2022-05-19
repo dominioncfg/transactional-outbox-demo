@@ -19,8 +19,8 @@ public class Startup
     {
         var executingAssambly = Assembly.GetExecutingAssembly();
 
-        services.AddSingleton<List<Order>>();
-        services.AddTransient<IOrderRepository, EfCoreOrderRepository>();
+        services.AddScoped<IOrderRepository, EfCoreOrderRepository>();
+        services.AddScoped<IMessageOutbox, MessageOutbox>();
         services.AddMediatR(executingAssambly);
 
         services.AddMassTransit(x =>
@@ -40,6 +40,8 @@ public class Startup
 
         services
             .AddControllers();
+
+        services.AddHostedService<OutboxPublisherBackgroundService>();
     }
 
     public void Configure(IApplicationBuilder app)

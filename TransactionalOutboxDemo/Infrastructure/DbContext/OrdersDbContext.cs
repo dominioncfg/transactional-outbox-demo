@@ -6,6 +6,7 @@ namespace TransactionalOutboxDemo.Infrastructure;
 public class OrdersDbContext : DbContext
 {
     public DbSet<Order> Orders => Set<Order>();
+    public DbSet<OutboxMessagePersistenceModel> OutboxMessages => Set<OutboxMessagePersistenceModel>();
 
     public OrdersDbContext(DbContextOptions<OrdersDbContext> options) : base(options)
     { }
@@ -18,6 +19,7 @@ public class OrdersDbContext : DbContext
     private static void AddEntitiesConfiguration(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new OrderEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new OutboxMessagePersistenceModelEntityTypeConfiguration());
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
