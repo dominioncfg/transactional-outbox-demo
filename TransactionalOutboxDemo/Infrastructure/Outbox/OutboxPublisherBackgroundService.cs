@@ -21,9 +21,7 @@ public class OutboxPublisherBackgroundService : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (!_ready)
-        {
-            await Task.Delay(1_000);
-        }
+            await Task.Delay(1000, stoppingToken);
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -63,7 +61,7 @@ public class OutboxPublisherBackgroundService : BackgroundService
                 }
 
                 dbContext.Remove(e);
-                dbContext.SaveChanges();
+                await dbContext.SaveChangesAsync(stoppingToken);
             }
         }
         catch (Exception e)

@@ -1,7 +1,7 @@
 ﻿namespace TransactionalOutboxDemo.Infrastructure;
 public class MessageOutbox : IMessageOutbox
 {
-    private OrdersDbContext _dbContext;
+    private readonly OrdersDbContext _dbContext;
 
     public MessageOutbox(OrdersDbContext dbContext)
     {

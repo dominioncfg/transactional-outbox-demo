@@ -14,7 +14,4 @@ public class OrderCreatedDomainEvent : IDomainEvent
         TotalQuantity = totalQuantity;
         TotalPrice = totalPrice;
     }
-
-    public static OrderCreatedDomainEvent FromOrder(Order o) => new(o.Id, o.BuyerId, o.TotalQuantity, o.TotalPrice);
-
 }

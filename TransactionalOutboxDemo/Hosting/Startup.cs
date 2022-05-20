@@ -19,6 +19,7 @@ public class Startup
     {
         var executingAssambly = Assembly.GetExecutingAssembly();
 
+        services.AddScoped<IMessageOutboxFactory, MessageOutboxFactory>();
         services.AddScoped<IUnitOfWork, EfCoreUnitOfWork>();
         services.AddScoped<IOrderRepository, EfCoreOrderRepository>();
         services.AddScoped<IMessageOutbox, MessageOutbox>();
