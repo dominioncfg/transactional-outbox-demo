@@ -17,11 +17,11 @@ public class EfCoreOrderRepository : IOrderRepository
     {
         await _dbContext.AddAsync(o, cancellationToken);
         
-
         foreach (var theEvent in o.DomainEvents)
             await _messageOutbox.PublishMessageAsync(theEvent, cancellationToken);
 
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        //Clearing the events before commiting the transaction may be a bad idea :(
+        //Maybe doing this on the DB Context Itself is better 
 
         o.ClearEvents();
     }

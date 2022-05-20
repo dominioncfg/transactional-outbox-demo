@@ -19,6 +19,7 @@ public class Startup
     {
         var executingAssambly = Assembly.GetExecutingAssembly();
 
+        services.AddScoped<IUnitOfWork, EfCoreUnitOfWork>();
         services.AddScoped<IOrderRepository, EfCoreOrderRepository>();
         services.AddScoped<IMessageOutbox, MessageOutbox>();
         services.AddMediatR(executingAssambly);
@@ -42,6 +43,7 @@ public class Startup
             .AddControllers();
 
         services.AddHostedService<OutboxPublisherBackgroundService>();
+        services.AddHostedService<TestOrderCreatorBackgroundService>();
     }
 
     public void Configure(IApplicationBuilder app)

@@ -15,7 +15,7 @@ namespace TransactionalOutboxDemo.Application
         public async Task Consume(ConsumeContext<OrderCreatedDomainEvent> context)
         {
             _logger.LogInformation("An order was created with id {Id}", context.Message.Id);
-            await Task.Delay(3000);
+            await Task.Delay(10);
             _logger.LogInformation("After order created", context.Message.Id);
         }
     }
