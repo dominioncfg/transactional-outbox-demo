@@ -1,6 +1,5 @@
-﻿namespace TransactionalOutboxDemo.Domain;
+﻿using MediatR;
 
-public interface IDomainEvent
-{
+namespace TransactionalOutboxDemo.Domain;
 
-}
+public interface IDomainEvent: INotification {}

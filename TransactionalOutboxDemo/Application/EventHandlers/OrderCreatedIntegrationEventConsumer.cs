@@ -3,16 +3,16 @@ using TransactionalOutboxDemo.Domain;
 
 namespace TransactionalOutboxDemo.Application
 {
-    public class OrderCreatedDomainEventConsumer : IConsumer<OrderCreatedDomainEvent>
+    public class OrderCreatedIntegrationEventConsumer : IConsumer<OrderCreatedIntegrationEvent>
     {
-        private readonly ILogger<OrderCreatedDomainEventConsumer> _logger;
+        private readonly ILogger<OrderCreatedIntegrationEventConsumer> _logger;
 
-        public OrderCreatedDomainEventConsumer(ILogger<OrderCreatedDomainEventConsumer> logger)
+        public OrderCreatedIntegrationEventConsumer(ILogger<OrderCreatedIntegrationEventConsumer> logger)
         {
             _logger = logger;
         }
 
-        public async Task Consume(ConsumeContext<OrderCreatedDomainEvent> context)
+        public async Task Consume(ConsumeContext<OrderCreatedIntegrationEvent> context)
         {
             _logger.LogInformation("An order was created with id {Id}", context.Message.Id);
             await Task.Delay(10);

@@ -1,18 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using TransactionalOutboxDemo.Domain;
 
 namespace TransactionalOutboxDemo.Infrastructure;
 
 public class OrdersDbContext : DbContext
 {
-    private readonly IMessageOutboxFactory _messageOutboxFactory;
+    private readonly IMediator _mediator;
 
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OutboxMessagePersistenceModel> OutboxMessages => Set<OutboxMessagePersistenceModel>();
 
-    public OrdersDbContext(DbContextOptions<OrdersDbContext> options, IMessageOutboxFactory messageOutboxFactory) : base(options)
+    public OrdersDbContext(DbContextOptions<OrdersDbContext> options, IMediator mediator) : base(options)
     {
-        _messageOutboxFactory = messageOutboxFactory;
+        _mediator = mediator;
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -28,9 +29,8 @@ public class OrdersDbContext : DbContext
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
     {
-        var messageOutbox = _messageOutboxFactory.Create();
         var entitiesWithEvents = GetEntitiesWithDomainEvents();
-        await SendDomainEventsAsync(messageOutbox, entitiesWithEvents, cancellationToken);
+        await SendDomainEventsAsync(entitiesWithEvents, cancellationToken);
         int result = await base.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         ClearDomainEvents(entitiesWithEvents);
         return result;
@@ -58,13 +58,13 @@ public class OrdersDbContext : DbContext
             entity.ClearEvents();
     }
 
-    private async static Task SendDomainEventsAsync(IMessageOutbox messageOutbox, AggregateRoot[] entities, CancellationToken cancellationToken)
+    private async Task SendDomainEventsAsync(AggregateRoot[] entities, CancellationToken cancellationToken)
     {
         foreach (var entity in entities)
         {
             foreach (var theEvent in entity.DomainEvents)
             {
-                await messageOutbox.PublishMessageAsync(theEvent, cancellationToken);
+                await _mediator.Publish(theEvent, cancellationToken);
             }
         }
     }
